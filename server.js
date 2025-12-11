@@ -230,7 +230,17 @@ app.get("/sse", async (req, res) => {
   console.log("New SSE connection established");
 
   // Use MESSAGE_ENDPOINT env var to support path-based routing through Cloudflare Worker
-  const messageEndpoint = process.env.MESSAGE_ENDPOINT || "/message";
+  // If MESSAGE_ENDPOINT is a full URL, extract just the path (SSEServerTransport expects a relative path)
+  let messageEndpoint = process.env.MESSAGE_ENDPOINT || "/message";
+  try {
+    const url = new URL(messageEndpoint);
+    messageEndpoint = url.pathname;
+    console.log(`Extracted message endpoint path from URL: ${messageEndpoint}`);
+  } catch (e) {
+    // Not a URL, assume it's already a path
+    console.log(`Using message endpoint as-is: ${messageEndpoint}`);
+  }
+  
   const transport = new SSEServerTransport(messageEndpoint, res);
   const sessionId = transport.sessionId;
   console.log(`Session created: ${sessionId}`);
@@ -252,6 +262,9 @@ app.get("/sse", async (req, res) => {
 app.post("/message", async (req, res) => {
   const sessionId = req.query.sessionId;
 
+  console.log(`[MESSAGE] Received POST request with sessionId: ${sessionId}`);
+  console.log(`[MESSAGE] Active sessions: ${Array.from(activeTransports.keys()).join(', ')}`);
+
   if (!sessionId) {
     return res.status(400).json({ error: "sessionId query parameter required" });
   }
@@ -259,8 +272,11 @@ app.post("/message", async (req, res) => {
   const transport = activeTransports.get(sessionId);
 
   if (!transport) {
+    console.error(`[MESSAGE] Session not found: ${sessionId}`);
     return res.status(400).json({ error: "No active session found" });
   }
+  
+  console.log(`[MESSAGE] Session found, processing message for: ${sessionId}`);
 
   try {
     await transport.handlePostMessage(req, res, req.body);
