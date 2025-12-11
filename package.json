@@ -1,13 +1,14 @@
 {
   "name": "hello-world-mcp",
   "version": "1.0.0",
+  "type": "module",
   "description": "A simple Hello World MCP server for testing",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.24.3",
     "express": "^5.0.0"
   }
 }

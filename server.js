@@ -9,7 +9,7 @@ import {
 // Create the MCP server instance
 const server = new Server(
   {
-    name: "hello-world-mcp",
+    name: "hello-from-mcphub",
     version: "1.0.0",
   },
   {
@@ -24,7 +24,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "say_hello",
+        name: "mcphub_hello",
         description: "Returns a Hello World message from Fly.io",
         inputSchema: {
           type: "object",
@@ -38,7 +38,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool execution
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "say_hello") {
+  if (request.params.name === "mcphub_hello") {
     return {
       content: [
         {
@@ -73,7 +73,9 @@ app.get("/health", (req, res) => {
 app.get("/sse", async (req, res) => {
   console.log("New SSE connection established");
 
-  const transport = new SSEServerTransport("/message", res);
+  // Use MESSAGE_ENDPOINT env var to support path-based routing through Cloudflare Worker
+  const messageEndpoint = process.env.MESSAGE_ENDPOINT || "/message";
+  const transport = new SSEServerTransport(messageEndpoint, res);
   const sessionId = transport.sessionId;
   console.log(`Session created: ${sessionId}`);
 
