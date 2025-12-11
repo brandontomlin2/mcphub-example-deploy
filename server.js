@@ -9,7 +9,7 @@ import {
 // Create the MCP server instance
 const server = new Server(
   {
-    name: "hello-from-mcphub",
+    name: "text-utilities-mcp",
     version: "1.0.0",
   },
   {
@@ -19,17 +19,92 @@ const server = new Server(
   }
 );
 
-// Define our single tool - a simple hello world function
+// Define multiple text utility tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
       {
-        name: "mcphub_hello",
-        description: "Returns a Hello World message from Fly.io",
+        name: "reverse_text",
+        description: "Reverses the order of characters in the given text",
         inputSchema: {
           type: "object",
-          properties: {},
-          required: [],
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to reverse",
+            },
+          },
+          required: ["text"],
+        },
+      },
+      {
+        name: "uppercase_text",
+        description: "Converts text to uppercase",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to convert to uppercase",
+            },
+          },
+          required: ["text"],
+        },
+      },
+      {
+        name: "lowercase_text",
+        description: "Converts text to lowercase",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to convert to lowercase",
+            },
+          },
+          required: ["text"],
+        },
+      },
+      {
+        name: "word_count",
+        description: "Counts the number of words in the given text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to count words in",
+            },
+          },
+          required: ["text"],
+        },
+      },
+      {
+        name: "character_count",
+        description: "Counts the number of characters (including spaces) in the given text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to count characters in",
+            },
+          },
+          required: ["text"],
+        },
+      },
+      {
+        name: "shuffle_text",
+        description: "Randomly shuffles the characters in the given text",
+        inputSchema: {
+          type: "object",
+          properties: {
+            text: {
+              type: "string",
+              description: "The text to shuffle",
+            },
+          },
+          required: ["text"],
         },
       },
     ],
@@ -38,18 +113,97 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 // Handle tool execution
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  if (request.params.name === "mcphub_hello") {
-    return {
-      content: [
-        {
-          type: "text",
-          text: "Hello World from Fly.io! 🚀",
-        },
-      ],
-    };
-  }
+  const { name, arguments: args } = request.params;
 
-  throw new Error(`Unknown tool: ${request.params.name}`);
+  switch (name) {
+    case "reverse_text": {
+      const text = args?.text || "";
+      const reversed = text.split("").reverse().join("");
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Reversed text: ${reversed}`,
+          },
+        ],
+      };
+    }
+
+    case "uppercase_text": {
+      const text = args?.text || "";
+      const uppercased = text.toUpperCase();
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Uppercase: ${uppercased}`,
+          },
+        ],
+      };
+    }
+
+    case "lowercase_text": {
+      const text = args?.text || "";
+      const lowercased = text.toLowerCase();
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Lowercase: ${lowercased}`,
+          },
+        ],
+      };
+    }
+
+    case "word_count": {
+      const text = args?.text || "";
+      const words = text.trim().split(/\s+/).filter(word => word.length > 0);
+      const count = words.length;
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Word count: ${count} word${count !== 1 ? 's' : ''}`,
+          },
+        ],
+      };
+    }
+
+    case "character_count": {
+      const text = args?.text || "";
+      const count = text.length;
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Character count: ${count} character${count !== 1 ? 's' : ''}`,
+          },
+        ],
+      };
+    }
+
+    case "shuffle_text": {
+      const text = args?.text || "";
+      const chars = text.split("");
+      // Fisher-Yates shuffle
+      for (let i = chars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+      }
+      const shuffled = chars.join("");
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Shuffled text: ${shuffled}`,
+          },
+        ],
+      };
+    }
+
+    default:
+      throw new Error(`Unknown tool: ${name}`);
+  }
 });
 
 // Create an Express HTTP server
@@ -64,7 +218,9 @@ const activeTransports = new Map();
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    name: "hello-world-mcp",
+    name: "text-utilities-mcp",
+    version: "1.0.0",
+    tools: ["reverse_text", "uppercase_text", "lowercase_text", "word_count", "character_count", "shuffle_text"],
     activeSessions: activeTransports.size
   });
 });
@@ -118,7 +274,8 @@ app.post("/message", async (req, res) => {
 
 // Start the HTTP server
 app.listen(PORT, () => {
-  console.log(`Hello World MCP running on port ${PORT}`);
+  console.log(`Text Utilities MCP running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/health`);
   console.log(`SSE endpoint: http://localhost:${PORT}/sse`);
+  console.log(`Available tools: reverse_text, uppercase_text, lowercase_text, word_count, character_count, shuffle_text`);
 });

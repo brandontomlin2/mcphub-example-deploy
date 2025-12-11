@@ -1,8 +1,8 @@
 {
-  "name": "hello-world-mcp",
+  "name": "text-utilities-mcp",
   "version": "1.0.0",
   "type": "module",
-  "description": "A simple Hello World MCP server for testing",
+  "description": "A text utility MCP server with multiple text manipulation tools",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
