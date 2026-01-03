@@ -1,0 +1,73 @@
+{
+  "manifest_version": "0.3",
+  "name": "text-utilities-mcp",
+  "display_name": "Text Utilities MCP Server",
+  "version": "1.0.0",
+  "description": "A powerful MCP server providing text manipulation tools including reverse, uppercase, lowercase, word count, character count, and shuffle operations",
+  "long_description": "This MCP Bundle provides a comprehensive set of text manipulation utilities for AI assistants. It includes tools for:\n\n- **Text Transformation**: Reverse text, convert to uppercase/lowercase\n- **Text Analysis**: Count words and characters\n- **Fun Operations**: Shuffle text randomly using Fisher-Yates algorithm\n\nAll tools are designed to work locally with minimal latency and no external dependencies.",
+  "author": {
+    "name": "MCPHub",
+    "url": "https://github.com/mcphub"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcphub/mcphub-example-deploy"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "reverse_text",
+      "description": "Reverses the order of characters in the given text"
+    },
+    {
+      "name": "uppercase_text",
+      "description": "Converts text to uppercase"
+    },
+    {
+      "name": "lowercase_text",
+      "description": "Converts text to lowercase"
+    },
+    {
+      "name": "word_count",
+      "description": "Counts the number of words in the given text"
+    },
+    {
+      "name": "character_count",
+      "description": "Counts the number of characters (including spaces) in the given text"
+    },
+    {
+      "name": "shuffle_text",
+      "description": "Randomly shuffles the characters in the given text using Fisher-Yates algorithm"
+    }
+  ],
+  "keywords": [
+    "text",
+    "utilities",
+    "string",
+    "manipulation",
+    "reverse",
+    "uppercase",
+    "lowercase",
+    "word-count",
+    "character-count",
+    "shuffle"
+  ],
+  "license": "MIT",
+  "compatibility": {
+    "claude_desktop": ">=0.10.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=16.0.0"
+    }
+  }
+}

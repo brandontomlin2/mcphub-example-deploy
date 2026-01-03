@@ -2,13 +2,33 @@
   "name": "text-utilities-mcp",
   "version": "1.0.0",
   "type": "module",
-  "description": "A text utility MCP server with multiple text manipulation tools",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
+  "description": "A text utility MCP server with multiple text manipulation tools - MCPB Bundle",
+  "main": "server/index.js",
+  "bin": {
+    "text-utilities-mcp": "./server/index.js"
   },
+  "scripts": {
+    "start": "node server/index.js",
+    "start:http": "node server-http.js",
+    "test": "node --test test/",
+    "validate": "echo 'Run: npx @anthropic-ai/mcpb validate' && node -e \"const m = require('./manifest.json'); console.log('Manifest valid:', m.name, 'v' + m.version);\"",
+    "pack": "echo 'To create bundle, install mcpb CLI: npm install -g @anthropic-ai/mcpb && mcpb pack'"
+  },
+  "keywords": [
+    "mcp",
+    "mcpb",
+    "text-utilities",
+    "model-context-protocol",
+    "claude",
+    "ai-tools"
+  ],
+  "author": "MCPHub",
+  "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.24.3",
-    "express": "^5.0.0"
+    "@modelcontextprotocol/sdk": "^1.12.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
